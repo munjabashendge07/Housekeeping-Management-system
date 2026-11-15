@@ -1,6 +1,23 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+// Determine the base API URL
+const getBaseUrl = () => {
+  let url = import.meta.env.VITE_API_URL;
+  if (!url) {
+    url = import.meta.env.PROD
+      ? "https://housekeeping-management-system-2.onrender.com/api"
+      : "http://localhost:5000/api";
+  }
+  // Remove trailing slashes
+  url = url.replace(/\/+$/, "");
+  // Ensure /api suffix exists
+  if (!url.endsWith("/api")) {
+    url += "/api";
+  }
+  return url;
+};
+
+const API_BASE_URL = getBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
