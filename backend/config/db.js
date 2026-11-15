@@ -1,17 +1,23 @@
+
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
     const mongoUri = process.env.MONGO_URL;
+
     if (!mongoUri) {
-      console.error("Warning: MONGO_URL environment variable is not defined!");
-      return;
+      throw new Error("MONGO_URL is missing in environment variables");
     }
 
-    const conn = await mongoose.connect(mongoUri);
+    const conn = await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 15000,
+    });
+
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+
   } catch (error) {
-    console.error(`MongoDB Connection Error: ${error.message}`);
+    console.error("MongoDB Connection Error:", error.message);
+    process.exit(1);
   }
 };
 

@@ -1,25 +1,24 @@
+
 const express = require("express");
 const path = require("path");
 const dotenv = require("dotenv");
 const cors = require("cors");
+
+dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config();
+
 const connectDB = require("./config/db");
+
 const userRoutes = require("./routes/userRoutes");
 const leaveRoutes = require("./routes/leaveRoutes");
 const goodsRoutes = require("./routes/goodsRoutes");
 const activityRoutes = require("./routes/activityRoutes");
-
-// Load .env from backend folder or root
-dotenv.config({ path: path.join(__dirname, ".env") });
-dotenv.config();
-
-connectDB();
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-// Root & Health check routes
 app.get("/", (req, res) => {
   res.status(200).json({
     status: "OK",
@@ -43,11 +42,17 @@ app.use("/api/activity", activityRoutes);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
 
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Server startup failed:", error.message);
+    process.exit(1);
+  }
+};
 
-
-
-
+startServer();
